@@ -28,7 +28,6 @@ public class LoginActivity extends AppCompatActivity {
         View.OnClickListener loginEvent = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("abc","hi");
                 String idString = id.getText().toString();
                 String tokenString = token.getText().toString();
                 LoginData loginData = new LoginData(idString, tokenString);
@@ -40,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
                     try
                     {
                         firebase.getInfo();
-                        firebase.putNoise();
+                        //firebase.putNoise();
                         sleep(1000);
                     } catch (InterruptedException e)
                     {

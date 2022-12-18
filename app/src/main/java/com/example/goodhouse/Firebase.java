@@ -1,5 +1,7 @@
 package com.example.goodhouse;
 
+import static android.os.SystemClock.sleep;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -19,6 +21,7 @@ import java.util.Map;
 
 public class Firebase {
     static HashMap<String, Object> noise = new HashMap<>();
+    static HashMap<String, Object> other_noise = new HashMap<>();
     static HashMap<String, Object> week_noise = new HashMap<>();
     static HashMap<String, Object> month_noise = new HashMap<>();
     static List<Object> fileList = new ArrayList<>();
@@ -68,6 +71,50 @@ public class Firebase {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
+        databaseReference.child(Integer.toString(address)).child(Integer.toString(103)).child("noise").addValueEventListener(new ValueEventListener() {  //get noise dB from firebase
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    other_noise.put(ds.getKey(),ds.getValue());
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+        databaseReference.child(Integer.toString(address)).child(Integer.toString(room)).child("month_noise").addValueEventListener(new ValueEventListener() {  //get noise dB from firebase
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    month_noise.put(ds.getKey(),ds.getValue());
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+        databaseReference.child(Integer.toString(address)).child(Integer.toString(room)).child("week_noise").addValueEventListener(new ValueEventListener() {  //get noise dB from firebase
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    week_noise.put(ds.getKey(),ds.getValue());
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    public void getNoise(int other_room) {
+        Log.d("abc","address"+address);
+        databaseReference.child(Integer.toString(address)).child(Integer.toString(other_room)).child("noise").addValueEventListener(new ValueEventListener() {  //get noise dB from firebase
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    other_noise.put(ds.getKey(),ds.getValue());
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
     }
 
     public void SignIn(int log_address, int log_room) { //회원가입시, db로 데이터 전송
@@ -90,13 +137,30 @@ public class Firebase {
 
         databaseReference.child(Integer.toString(address)).child(Integer.toString(room)).child("fileComplaint").push().setValue(fcomplaint);
         if(result == 1) {
-            dataComplaint gcomplaint = new dataComplaint(room, time,content, 2);
-            databaseReference.child(Integer.toString(address)).child(Integer.toString(room)).child("getComplaint").push().setValue(gcomplaint);
+            dataComplaint gcomplaint = new dataComplaint(room, time, content, 2);
+            databaseReference.child(Integer.toString(address)).child(Integer.toString(other_room)).child("getComplaint").push().setValue(gcomplaint);
         }
     }
 
     public int CheckComplaint(int other_room) { //소음 발생 여부 확인
-        return 1;
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("HH");
+        SimpleDateFormat formatter2 = new SimpleDateFormat("MM");
+        int Hour = Integer.parseInt(formatter.format(date));
+        int Min = Integer.parseInt(formatter2.format(date));
+        int result = 0;
+
+        int dB = Integer.parseInt(other_noise.get(Integer.toString(Hour)).toString());
+        int dB2 = Integer.parseInt(other_noise.get(Integer.toString(Hour)).toString());
+        if (Min < 15) {
+            dB2 = Integer.parseInt(other_noise.get(Integer.toString((Hour - 1) % 24)).toString());
+        }
+        if ((Hour < 6 || Hour >= 22) && (dB > 38 || dB2 > 38)) {
+            result = 1;
+        } else if (dB > 43 || dB2 > 43) {
+            result = 1;
+        }
+        return result;
     }
 
     public void putNoise() { //list 가져온 후 값 추가하기
@@ -110,7 +174,7 @@ public class Firebase {
 
     public HashMap NoiseSet() { //db로부터 값 가져오기 (현재는 랜덤으로 입력)
         noise.clear();
-        for(int i=1;i<13;i++) {
+        for(int i=1;i<25;i++) {
             noise.put(Integer.toString(i),Integer.toString((int)((Math.random()*10000)%100)));
         }
         return noise;
@@ -132,7 +196,7 @@ public class Firebase {
         return month_noise;
     }
 
-    public void CalculateScore(int addresss, int room) { //매너지수 계산
-
+    public void update_Score(int score) {
+        databaseReference.child(Integer.toString(address)).child(Integer.toString(room)).child("score").setValue(score);
     }
 }

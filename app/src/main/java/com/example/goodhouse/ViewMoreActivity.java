@@ -1,5 +1,7 @@
 package com.example.goodhouse;
 
+import static java.lang.Thread.sleep;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,9 +38,9 @@ public class ViewMoreActivity extends AppCompatActivity {
         aDayBtn = findViewById(R.id.oneDayBtn);
         aWeekBtn = findViewById(R.id.weekBtn);
         aMonthBtn = findViewById(R.id.amonthBtn);
-        makeChart(12);
+        makeChart(24);
 
-        aDayBtn.setOnClickListener(v -> makeChart(12));
+        aDayBtn.setOnClickListener(v -> makeChart(24));
         aWeekBtn.setOnClickListener(v -> makeChart(7));
         aMonthBtn.setOnClickListener(v -> makeChart(30));
 
@@ -46,17 +48,18 @@ public class ViewMoreActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(layoutManager);
         ComplaintAdapter adapter = new ComplaintAdapter();
-        //여기 코딩 필요
 
         adapter.setList(getList());
         recyclerView.setAdapter(adapter);
     }
-    //여기 제작해야함
+
     static ArrayList<Complaint> getList(){
         ArrayList<Complaint> list = new ArrayList<>();
-        Log.d("abc",""+MainPageActivity.list.length);
+        for(int i=0;i<MainPageActivity.list2.length;i++) {
+            list.add(new Complaint(MainPageActivity.list2[i][2],MainPageActivity.list2[i][3],Integer.parseInt(MainPageActivity.list2[i][1]),Integer.parseInt(MainPageActivity.list2[i][0])));
+        }
         for(int i=0;i<MainPageActivity.list.length;i++) {
-            list.add(new Complaint(MainPageActivity.list[i][2],MainPageActivity.list[i][3]));
+            list.add(new Complaint(MainPageActivity.list[i][2],MainPageActivity.list[i][3],Integer.parseInt(MainPageActivity.list[i][1]),Integer.parseInt(MainPageActivity.list[i][0])));
         }
         return list;
     }
@@ -97,8 +100,8 @@ public class ViewMoreActivity extends AppCompatActivity {
     }
 
     void getDB(int n) {
-        if(n == 12) {
-            for(int i=0;i<12;i++) {
+        if(n == 24) {
+            for(int i=0;i<24;i++) {
                 dbArr[i] = Integer.parseInt(Firebase.noise.get(Integer.toString(i+1)).toString());
             }
         }
