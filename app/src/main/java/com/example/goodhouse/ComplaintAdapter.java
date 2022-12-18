@@ -1,5 +1,6 @@
 package com.example.goodhouse;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.BreakIterator;
 import java.util.ArrayList;
 
 public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.ViewHolder>{
@@ -50,7 +52,13 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.View
 
         public void setItem(Complaint complaint){
             timeText.setText(complaint.time);
-            content.setText("소음 종류 : "+complaint.complaintKind);
+            String re = "접수";
+            if(complaint.result == 0) {
+                Log.d("abc","반려");
+                re = "반려";
+            }
+            if(complaint.result == 2) content.setText("받은 민원\n\n소음 : "+complaint.complaintKind);
+            else content.setText("접수 민원\n\n소음 : "+complaint.complaintKind+"\n대상 : "+complaint.target+"호\n결과 : "+re);
         }
     }
 }

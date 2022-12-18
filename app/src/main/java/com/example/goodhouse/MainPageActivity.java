@@ -110,6 +110,7 @@ MainPageActivity extends AppCompatActivity {
                 score-=3;
             }
         }
+        score-=Firebase.getList.size()*5;
         firebase.update_Score(score);
         scoreText.setText(score +"점");
         complText.setText(Firebase.getList.size()+"회/월");
